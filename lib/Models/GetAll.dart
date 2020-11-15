@@ -1,15 +1,15 @@
 import 'dart:convert';
 
 class GetAll {
-  List<StockList> stockList;
+  List<Stock> stockList;
 
   GetAll({this.stockList});
 
   GetAll.fromJson(Map<String, dynamic> json) {
     if (json['StockList'] != null) {
-      stockList = new List<StockList>();
+      stockList = new List<Stock>();
       json['StockList'].forEach((v) {
-        stockList.add(new StockList.fromJson(v));
+        stockList.add(new Stock.fromJson(v));
       });
     }
   }
@@ -23,16 +23,16 @@ class GetAll {
   }
 }
 
-class StockList {
+class Stock {
   String stock;
   String image;
   Esg esg;
   GlassDoor glassDoor;
   RA rA;
 
-  StockList({this.stock, this.esg, this.glassDoor, this.rA});
+  Stock({this.stock, this.esg, this.glassDoor, this.rA});
 
-  StockList.fromJson(Map<String, dynamic> json) {
+  Stock.fromJson(Map<String, dynamic> json) {
     stock = json['Stock'];
     esg = json['Esg'] != null ? new Esg.fromJson(json['Esg']) : null;
     glassDoor = json['GlassDoor'] != null ? new GlassDoor.fromJson(json['GlassDoor']) : null;
@@ -145,18 +145,18 @@ class RA {
   }
 }
 
-Future<List<StockList>> getStaticAll() async {
+Future<List<Stock>> getStaticSelected() async {
   String staticJson = await Future.delayed(Duration(milliseconds: 1500), () {
     return staticAll;
   });
 
   Map _responseMap = jsonDecode(staticJson);
   GetAll all = GetAll.fromJson(_responseMap);
-  List<StockList> stockList = all.stockList;
+  List<Stock> stockList = all.stockList;
 
-  List<StockList> selectedStocks = [];
+  List<Stock> selectedStocks = [];
 
-  for (StockList stock in stockList) {
+  for (Stock stock in stockList) {
     if (stock.stock == "EGIE3") {
       stock.image = "assets/engie.png";
       selectedStocks.add(stock);
@@ -183,6 +183,24 @@ Future<List<StockList>> getStaticAll() async {
     }
   }
   return selectedStocks;
+}
+
+Future<List<Stock>> getStaticAll() async {
+  String staticJson = await Future.delayed(Duration(milliseconds: 1500), () {
+    return staticAll;
+  });
+
+  Map _responseMap = jsonDecode(staticJson);
+  GetAll all = GetAll.fromJson(_responseMap);
+  List<Stock> stockList = all.stockList;
+
+  /*for (int index = 0; index <= stockList.length; index++) {
+    if (stockList[index].esg == null || stockList[index].esg.rating ==null) {
+      stockList.removeAt(index);
+    }
+  }*/
+
+  return stockList;
 }
 
 String staticAll = """
