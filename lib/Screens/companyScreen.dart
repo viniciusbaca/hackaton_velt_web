@@ -4,7 +4,7 @@ import 'homeScreen.dart';
 
 class StockDescription extends StatelessWidget {
   const StockDescription({Key key, this.companyStock}) : super(key: key);
-  final StockList companyStock;
+  final Stock companyStock;
 
   Widget logo() {
     return Padding(
@@ -48,7 +48,7 @@ class StockDescription extends StatelessWidget {
 class TableInfo extends StatelessWidget {
   const TableInfo({Key key, this.image, this.companyStock}) : super(key: key);
   final String image;
-  final StockList companyStock;
+  final Stock companyStock;
 
   Widget infoValue(String info, String value) {
     return Column(
@@ -71,29 +71,32 @@ class TableInfo extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.max,
             children: [
-              Container(color: Colors.blueGrey,width: double.maxFinite, child: Image(image: AssetImage(image), height: 30)),
-              image == "assets/glassdoor.png"?
-
-              Column(
-                children: [
-                  infoValue("Overall", glassDoorInfo.overall),
-                  infoValue("Cultura e valores", glassDoorInfo.culturaEValores),
-                  infoValue("Diversidade inclusão", glassDoorInfo.diversidadeEInclusao),
-                  infoValue("Qualidade de vida", glassDoorInfo.qualidadeDeVida),
-                  infoValue("Alta liderança", glassDoorInfo.altaLideranca),
-                  infoValue("Remuneração e benefícios", glassDoorInfo.remuneracaoEBeneficios),
-                ],
-              ):
-              Column(
-                children: [
-                  infoValue("Rating", reclameAquiInfo.rating),
-                  infoValue("Reclamações respondidas", reclameAquiInfo.reclamacoesRespondidas),
-                  infoValue("Voltariam a fazer negócio", reclameAquiInfo.voltariamAFazerNegocio),
-                  infoValue("Índice de solução", reclameAquiInfo.indiceDeSolucao),
-                  infoValue("Nota do consumidor", reclameAquiInfo.notaDoConsumidor),
-                ],
-              )
-            ]
+              Container(
+                  color: Colors.blueGrey,
+                  width: double.maxFinite,
+                  child: Image(image: AssetImage(image), height: 30)),
+              image == "assets/glassdoor.png"
+                  ? Column(
+                      children: [
+                        infoValue("Overall", glassDoorInfo.overall),
+                        infoValue("Cultura e valores", glassDoorInfo.culturaEValores),
+                        infoValue("Diversidade inclusão", glassDoorInfo.diversidadeEInclusao),
+                        infoValue("Qualidade de vida", glassDoorInfo.qualidadeDeVida),
+                        infoValue("Alta liderança", glassDoorInfo.altaLideranca),
+                        infoValue("Remuneração e benefícios", glassDoorInfo.remuneracaoEBeneficios),
+                      ],
+                    )
+                  : Column(
+                      children: [
+                        infoValue("Rating", reclameAquiInfo.rating),
+                        infoValue("Reclamações respondidas", reclameAquiInfo.reclamacoesRespondidas),
+                        infoValue("Voltariam a fazer negócio", reclameAquiInfo.voltariamAFazerNegocio),
+                        infoValue("Índice de solução", reclameAquiInfo.indiceDeSolucao),
+                        infoValue("Nota do consumidor", reclameAquiInfo.notaDoConsumidor),
+                        infoValue("Nota do consumidor", reclameAquiInfo.notaDoConsumidor)
+                      ],
+                    ),
+            ],
           ),
         ),
       ),
@@ -103,7 +106,7 @@ class TableInfo extends StatelessWidget {
 
 class StockData extends StatelessWidget {
   const StockData({Key key, this.companyStock}) : super(key: key);
-  final StockList companyStock;
+  final Stock companyStock;
 
   Widget tables(BuildContext context) {
     return Container(
@@ -117,8 +120,14 @@ class StockData extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                TableInfo(image: "assets/glassdoor.png", companyStock: companyStock,),
-                TableInfo(image: "assets/reclameaqui.png", companyStock: companyStock,),
+                TableInfo(
+                  image: "assets/glassdoor.png",
+                  companyStock: companyStock,
+                ),
+                TableInfo(
+                  image: "assets/reclameaqui.png",
+                  companyStock: companyStock,
+                ),
               ],
             ),
           ),
@@ -130,9 +139,7 @@ class StockData extends StatelessWidget {
                     padding: EdgeInsets.all(10),
                     width: double.maxFinite,
                     child: Card(
-                      child: Text(
-                        "oi"
-                      ),
+                      child: Text("oi"),
                     ),
                   ),
                 ),
@@ -141,9 +148,7 @@ class StockData extends StatelessWidget {
                     padding: EdgeInsets.all(10),
                     width: double.maxFinite,
                     child: Card(
-                      child: Text(
-                        "oi"
-                      ),
+                      child: Text("oi"),
                     ),
                   ),
                 ),
@@ -157,12 +162,11 @@ class StockData extends StatelessWidget {
 
   Widget similarValue(BuildContext context) {
     return Container(
-      height: MediaQuery.of(context).size.height * 0.6,
-      child: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Card(child: Text("Salve")),
-      )
-    );
+        height: MediaQuery.of(context).size.height * 0.6,
+        child: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Card(child: Text("Salve")),
+        ));
   }
 
   @override
@@ -179,13 +183,13 @@ class StockData extends StatelessWidget {
 
 class CompanyScreen extends StatelessWidget {
   const CompanyScreen({Key key, this.companyStock}) : super(key: key);
-  final StockList companyStock;
+  final Stock companyStock;
 
   Widget topBar() {
     return Container(color: Colors.black);
   }
 
-  Widget centerScreen(BuildContext context, StockList companyStock) {
+  Widget centerScreen(BuildContext context, Stock companyStock) {
     return Container(
       height: MediaQuery.of(context).size.height * 0.8,
       color: Colors.green,
