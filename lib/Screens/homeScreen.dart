@@ -128,6 +128,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: SingleChildScrollView(
                       child: ListView.builder(
                         scrollDirection: Axis.vertical,
+                        physics: NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
                         itemCount: selectedStocks.length,
                         itemBuilder: (context, index) {

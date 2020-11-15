@@ -128,6 +128,7 @@ class _EveryStockState extends State<EveryStock> {
                     child: SingleChildScrollView(
                       child: ListView.builder(
                         scrollDirection: Axis.vertical,
+                        physics: NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
                         itemCount: allStocks.length,
                         itemBuilder: (context, index) {
