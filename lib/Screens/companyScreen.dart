@@ -15,7 +15,7 @@ class StockDescription extends StatelessWidget {
 
   Widget stockCode() {
     return Column(
-      children: [Text(companyStock.stock), Text("ESG: ${companyStock.esg.rating}")],
+      children: [Text(companyStock.stock), /*Text("ESG: ${companyStock.esg.rating}")*/],
     );
   }
 

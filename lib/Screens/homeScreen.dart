@@ -2,8 +2,206 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hackaton_velt_app/Models/GetAll.dart';
 import 'package:hackaton_velt_app/Screens/companyScreen.dart';
-import 'package:hackaton_velt_app/Screens/compareStocks.dart';
+import 'package:hackaton_velt_app/Screens/compareScreen.dart';
 import 'package:hackaton_velt_app/Screens/everyStock.dart';
+
+class CardList extends StatefulWidget {
+  final Future futureMapStocks;
+  final String text;
+  final int length, sum;
+
+  const CardList({Key key, this.futureMapStocks, this.text, this.length, this.sum}) : super(key: key);
+
+  @override
+  _CardListState createState() => _CardListState(futureMapStocks, text, length, sum);
+}
+
+class _CardListState extends State<CardList> {
+  final Future futureMapStocks;
+  final String text;
+  final int length, sum;
+
+  _CardListState(this.futureMapStocks, this.text, this.length, this.sum);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(30, 20, 30, 20),
+      child: Column(
+        children: [
+          Container(
+            child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(text, style: TextStyle(fontWeight: FontWeight.w900))),
+          ),
+          FutureBuilder(
+              future: futureMapStocks,
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                if (snapshot.hasData) {
+                  Map<String, List<Stock>> mapStocks = snapshot.data;
+                  List<Stock> selectedStocks = mapStocks["selectedStocks"];
+                  return Container(
+                    height: MediaQuery.of(context).size.height * 0.3,
+                    child: SingleChildScrollView(
+                      child: ListView.builder(
+                        scrollDirection: Axis.vertical,
+                        physics: NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: length,
+                        itemBuilder: (context, index) {
+                          return CompanyCard(
+                            stock: selectedStocks[index + sum],
+                            image: selectedStocks[index + sum].image,
+                            value1: "${selectedStocks[index + sum].glassDoor.overall}", //TODO ESG
+                            value2: selectedStocks[index + sum].glassDoor.overall,
+                            value3: selectedStocks[index + sum].glassDoor.culturaEValores,
+                          );
+                        },
+                      ),
+                    ),
+                  );
+                } else {
+                  return Center(child: CircularProgressIndicator());
+                }
+              }),
+          FlatButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => EveryStock()),
+              );
+            },
+            child: Container(color: Colors.cyan, child: Text("Ver mais")),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class CompareStocks extends StatefulWidget {
+  final Future futureMapStocks;
+
+  const CompareStocks({Key key, this.futureMapStocks}) : super(key: key);
+  @override
+  _CompareStocksState createState() => _CompareStocksState(futureMapStocks);
+}
+
+class _CompareStocksState extends State<CompareStocks> {
+  final Future futureMapStocks;
+  _CompareStocksState(this.futureMapStocks);
+
+  final stockField1 = TextEditingController(text: 'ABEV3');
+  final stockField2 = TextEditingController(text: 'AZUL4');
+  bool inputError1 = false;
+  bool inputError2 = false;
+
+  Widget stockField(String text, TextEditingController controller, bool errorBool) {
+    return Column(
+      children: [
+        Text("Empresa $text"),
+        TextField(
+            onTap: () {
+              setState(() {
+                inputError1 = false;
+                inputError2 = false;
+              });
+            },
+            controller: controller,
+            decoration: errorBool == true
+                ? InputDecoration(
+                    errorStyle: TextStyle(color: Colors.red), errorText: 'Por favor digite um código válido')
+                : InputDecoration())
+      ],
+    );
+  }
+
+  @override
+  void dispose() {
+    stockField1.dispose();
+    stockField2.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(30, 20, 30, 20),
+      child: Column(
+        children: [
+          Container(
+            child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text("Comparador", style: TextStyle(fontWeight: FontWeight.w900))),
+          ),
+          FutureBuilder(
+              future: futureMapStocks,
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                if (snapshot.hasData) {
+                  Map<String, List<Stock>> mapStocks = snapshot.data;
+                  List<Stock> allStocks = mapStocks["allStocks"];
+
+                  return Column(
+                    children: [
+                      Container(
+                          height: MediaQuery.of(context).size.height * 0.2,
+                          child: Column(
+                            children: [
+                              stockField("1", stockField1, inputError1),
+                              stockField("2", stockField2, inputError2)
+                            ],
+                          )),
+                      FlatButton(
+                        onPressed: () {
+                          Stock selectedStock1;
+                          Stock selectedStock2;
+
+                          for (Stock stock in allStocks) {
+                            if (stock.stock == stockField1.text) {
+                              inputError1 = false;
+                              selectedStock1 = stock;
+                              break;
+                            } else {
+                              inputError1 = true;
+                            }
+                          }
+                          for (Stock stock in allStocks) {
+                            if (stock.stock == stockField2.text) {
+                              inputError2 = false;
+                              selectedStock2 = stock;
+                              break;
+                            } else {
+                              inputError2 = true;
+                            }
+                          }
+                          if (inputError1 == false && inputError2 == false) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      CompareScreen(stock1: selectedStock1, stock2: selectedStock2)),
+                            );
+                            print("tey");
+                          } else {
+                            setState(() {
+                              inputError1 = true;
+                              inputError2 = true;
+                            });
+                          }
+                        },
+                        child: Container(color: Colors.cyan, child: Text("Comparar")),
+                      )
+                    ],
+                  );
+                } else {
+                  return Center(child: CircularProgressIndicator());
+                }
+              }),
+        ],
+      ),
+    );
+  }
+}
 
 class IndicatorRow extends StatelessWidget {
   const IndicatorRow({Key key, this.value, this.image}) : super(key: key);
@@ -99,167 +297,11 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   Future<Map<String, List<Stock>>> futureMapStocks;
-  final stockField1 = TextEditingController();
-  final stockField2 = TextEditingController();
-  bool inputError1 = false;
-  bool inputError2 = false;
 
   @override
   void initState() {
     futureMapStocks = getMapStocks();
     super.initState();
-  }
-
-  Widget stockField(String text, TextEditingController controller, bool errorBool) {
-    return Column(
-      children: [
-        Text("Empresa $text"),
-        TextField(
-            onTap: () {
-              setState(() {
-                inputError1 = false;
-                inputError2 = false;
-              });
-            },
-            controller: controller,
-            decoration: errorBool == true
-                ? InputDecoration(
-                    errorStyle: TextStyle(color: Colors.red), errorText: 'Por favor digite um código válido')
-                : InputDecoration())
-      ],
-    );
-  }
-
-  Widget compareStocks(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(30, 20, 30, 20),
-      child: Column(
-        children: [
-          Container(
-            child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text("Comparador", style: TextStyle(fontWeight: FontWeight.w900))),
-          ),
-          FutureBuilder(
-              future: futureMapStocks,
-              builder: (BuildContext context, AsyncSnapshot snapshot) {
-                if (snapshot.hasData) {
-                  Map<String, List<Stock>> mapStocks = snapshot.data;
-                  List<Stock> allStocks = mapStocks["allStocks"];
-
-                  return Column(
-                    children: [
-                      Container(
-                          height: MediaQuery.of(context).size.height * 0.2,
-                          child: Column(
-                            children: [
-                              stockField("1", stockField1, inputError1),
-                              stockField("2", stockField2, inputError2)
-                            ],
-                          )),
-                      FlatButton(
-                        onPressed: () {
-                          Stock selectedStock1;
-                          Stock selectedStock2;
-
-                          for (Stock stock in allStocks) {
-                            if (stock.stock == stockField1.text) {
-                              inputError1 = false;
-                              selectedStock1 = stock;
-                              break;
-                            } else {
-                              inputError1 = true;
-                            }
-                          }
-                          for (Stock stock in allStocks) {
-                            if (stock.stock == stockField2.text) {
-                              inputError2 = false;
-                              selectedStock2 = stock;
-                              break;
-                            } else {
-                              inputError2 = true;
-                            }
-                          }
-                          if (inputError1 == false && inputError1 == false) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      CompareStocks(stock1: selectedStock1, stock2: selectedStock2)),
-                            );
-                            print("tey");
-                          } else {
-                            setState(() {
-                              inputError1 = true;
-                              inputError2 = true;
-                            });
-                          }
-                        },
-                        child: Container(color: Colors.cyan, child: Text("Comparar")),
-                      )
-                    ],
-                  );
-                } else {
-                  return Center(child: CircularProgressIndicator());
-                }
-              }),
-        ],
-      ),
-    );
-  }
-
-  Widget cardList(BuildContext context, String text, int length, int sum) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(30, 20, 30, 20),
-      child: Column(
-        children: [
-          Container(
-            child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(text, style: TextStyle(fontWeight: FontWeight.w900))),
-          ),
-          FutureBuilder(
-              future: futureMapStocks,
-              builder: (BuildContext context, AsyncSnapshot snapshot) {
-                if (snapshot.hasData) {
-                  Map<String, List<Stock>> mapStocks = snapshot.data;
-                  List<Stock> selectedStocks = mapStocks["selectedStocks"];
-                  return Container(
-                    height: MediaQuery.of(context).size.height * 0.3,
-                    child: SingleChildScrollView(
-                      child: ListView.builder(
-                        scrollDirection: Axis.vertical,
-                        physics: NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount: length,
-                        itemBuilder: (context, index) {
-                          return CompanyCard(
-                            stock: selectedStocks[index + sum],
-                            image: selectedStocks[index + sum].image,
-                            value1: "${selectedStocks[index + sum].glassDoor.overall}", //TODO ESG
-                            value2: selectedStocks[index + sum].glassDoor.overall,
-                            value3: selectedStocks[index + sum].glassDoor.culturaEValores,
-                          );
-                        },
-                      ),
-                    ),
-                  );
-                } else {
-                  return Center(child: CircularProgressIndicator());
-                }
-              }),
-          FlatButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => EveryStock()),
-              );
-            },
-            child: Container(color: Colors.cyan, child: Text("Ver mais")),
-          )
-        ],
-      ),
-    );
   }
 
   Widget centerScreen(BuildContext context) {
@@ -270,28 +312,38 @@ class _HomeScreenState extends State<HomeScreen> {
             Expanded(
               child: Column(
                 children: [
-                  cardList(context, "Confira os destaques de hoje", 2, 0),
-                  cardList(context, "Confira os destaques de hoje", 2, 0),
+                  CardList(
+                    futureMapStocks: futureMapStocks,
+                    text: "Confira os destaques de hoje",
+                    length: 2,
+                    sum: 0,
+                  ),
+                  CardList(
+                    futureMapStocks: futureMapStocks,
+                    text: "Confira os destaques de hoje",
+                    length: 2,
+                    sum: 0,
+                  ),
                 ],
               ),
             ),
             Expanded(
               child: Column(
                 children: [
-                  cardList(context, "Como andam seus favoritos", 3, 2),
-                  compareStocks(context),
+                  CardList(
+                    futureMapStocks: futureMapStocks,
+                    text: "Como andam seus favoritos",
+                    length: 3,
+                    sum: 2,
+                  ),
+                  CompareStocks(
+                    futureMapStocks: futureMapStocks,
+                  ),
                 ],
               ),
             ),
           ],
         ));
-  }
-
-  @override
-  void dispose() {
-    stockField1.dispose();
-    stockField2.dispose();
-    super.dispose();
   }
 
   @override
