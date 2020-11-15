@@ -72,7 +72,7 @@ class TableInfo extends StatelessWidget {
             mainAxisSize: MainAxisSize.max,
             children: [
               Container(
-                  color: Colors.blueGrey,
+                  color: Colors.cyan,
                   width: double.maxFinite,
                   child: Image(image: AssetImage(image), height: 30)),
               image == "assets/glassdoor.png"
@@ -139,7 +139,16 @@ class StockData extends StatelessWidget {
                     padding: EdgeInsets.all(10),
                     width: double.maxFinite,
                     child: Card(
-                      child: Text("oi"),
+                      child: Column(
+                        children: [
+                          Container(
+                            height: 30,
+                          ),
+                          Center(
+                           child: Image(image: AssetImage(""))
+                          )
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -186,13 +195,13 @@ class CompanyScreen extends StatelessWidget {
   final Stock companyStock;
 
   Widget topBar() {
-    return Container(color: Colors.black);
+    return Container(color: Color(0XFF1A237E));
   }
 
   Widget centerScreen(BuildContext context, Stock companyStock) {
     return Container(
       height: MediaQuery.of(context).size.height * 0.8,
-      color: Colors.green,
+      color: Colors.white60 ,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(30, 20, 20, 30),
         child: Column(
@@ -207,7 +216,7 @@ class CompanyScreen extends StatelessWidget {
   }
 
   Widget bottomBar() {
-    return Container(color: Colors.black);
+    return Container(color: Color(0XFF1A237E));
   }
 
   @override
@@ -215,9 +224,9 @@ class CompanyScreen extends StatelessWidget {
     return Scaffold(
       body: Column(
         children: [
-          Expanded(flex: 1, child: topBar()),
+          Expanded(flex: 1, child: Container(color: Color(0XFF1A237E))),
           Expanded(flex: 10, child: centerScreen(context, companyStock)),
-          Expanded(flex: 1, child: bottomBar()),
+          Expanded(flex: 1, child: Container(color: Color(0XFF1A237E))),
         ],
       ),
     );

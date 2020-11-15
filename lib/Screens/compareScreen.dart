@@ -20,10 +20,10 @@ class StockHeader extends StatelessWidget {
   }
 }
 
-class TableInfo extends StatelessWidget {
-  const TableInfo({Key key, this.image, this.companyStock}) : super(key: key);
+class CompareTable extends StatelessWidget {
+  const CompareTable({Key key, this.image, this.stock1, this.stock2}) : super(key: key);
   final String image;
-  final Stock companyStock;
+  final Stock stock1, stock2;
 
   Widget infoValue(String info, String value) {
     return Column(
@@ -34,15 +34,38 @@ class TableInfo extends StatelessWidget {
     );
   }
 
+  Widget glassDoorInfo(GlassDoor glassDoor) {
+    return Column(
+      children: [
+        infoValue("Overall", glassDoor.overall),
+        infoValue("Cultura e valores", glassDoor.culturaEValores),
+        infoValue("Diversidade inclusão", glassDoor.diversidadeEInclusao),
+        infoValue("Qualidade de vida", glassDoor.qualidadeDeVida),
+        infoValue("Alta liderança", glassDoor.altaLideranca),
+        infoValue("Remuneração e benefícios", glassDoor.remuneracaoEBeneficios),
+      ],
+    );
+  }
+
+  Widget reclameAquiInfo(RA reclameAqui) {
+    return Column(
+      children: [
+        infoValue("Rating", reclameAqui.rating),
+        infoValue("Reclamações respondidas", reclameAqui.reclamacoesRespondidas),
+        infoValue("Voltariam a fazer negócio", reclameAqui.voltariamAFazerNegocio),
+        infoValue("Índice de solução", reclameAqui.indiceDeSolucao),
+        infoValue("Nota do consumidor", reclameAqui.notaDoConsumidor),
+        infoValue("Nota do consumidor", reclameAqui.notaDoConsumidor)
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    GlassDoor glassDoorInfo = companyStock.glassDoor;
-    RA reclameAquiInfo = companyStock.rA;
-    return Expanded(
-      flex: 1,
-      child: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Card(
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: Card(
+        child: Container(
           child: Column(
             mainAxisSize: MainAxisSize.max,
             children: [
@@ -51,24 +74,18 @@ class TableInfo extends StatelessWidget {
                   width: double.maxFinite,
                   child: Image(image: AssetImage(image), height: 30)),
               image == "assets/glassdoor.png"
-                  ? Column(
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        infoValue("Overall", glassDoorInfo.overall),
-                        infoValue("Cultura e valores", glassDoorInfo.culturaEValores),
-                        infoValue("Diversidade inclusão", glassDoorInfo.diversidadeEInclusao),
-                        infoValue("Qualidade de vida", glassDoorInfo.qualidadeDeVida),
-                        infoValue("Alta liderança", glassDoorInfo.altaLideranca),
-                        infoValue("Remuneração e benefícios", glassDoorInfo.remuneracaoEBeneficios),
+                        glassDoorInfo(stock1.glassDoor),
+                        glassDoorInfo(stock2.glassDoor),
                       ],
                     )
-                  : Column(
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        infoValue("Rating", reclameAquiInfo.rating),
-                        infoValue("Reclamações respondidas", reclameAquiInfo.reclamacoesRespondidas),
-                        infoValue("Voltariam a fazer negócio", reclameAquiInfo.voltariamAFazerNegocio),
-                        infoValue("Índice de solução", reclameAquiInfo.indiceDeSolucao),
-                        infoValue("Nota do consumidor", reclameAquiInfo.notaDoConsumidor),
-                        infoValue("Nota do consumidor", reclameAquiInfo.notaDoConsumidor)
+                        reclameAquiInfo(stock1.rA),
+                        reclameAquiInfo(stock2.rA),
                       ],
                     ),
             ],
@@ -79,49 +96,36 @@ class TableInfo extends StatelessWidget {
   }
 }
 
+class StockGraph extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Container(
+        padding: EdgeInsets.all(10),
+        width: double.maxFinite,
+        child: Card(child: Text("oi")),
+      ),
+    );
+  }
+}
+
+
 class StockData extends StatelessWidget {
-  const StockData({Key key, this.companyStock}) : super(key: key);
-  final Stock companyStock;
+  const StockData({Key key, this.stock1, this.stock2}) : super(key: key);
+  final Stock stock1, stock2;
 
   Widget tables(BuildContext context) {
     return Container(
       constraints: BoxConstraints(
-        maxHeight: MediaQuery.of(context).size.height * 0.6,
+        maxHeight: MediaQuery.of(context).size.height * 1.5,
         minHeight: 100,
       ),
       child: Column(
         children: [
-          TableInfo(
-            image: "assets/glassdoor.png",
-            companyStock: companyStock,
-          ),   TableInfo(
-            image: "assets/reclameaqui.png",
-            companyStock: companyStock,
-          ),
-          Expanded(
-            child: Column(
-              children: [
-                Expanded(
-                  child: Container(
-                    padding: EdgeInsets.all(10),
-                    width: double.maxFinite,
-                    child: Card(
-                      child: Text("oi"),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    padding: EdgeInsets.all(10),
-                    width: double.maxFinite,
-                    child: Card(
-                      child: Text("oi"),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          )
+          CompareTable(image: "assets/glassdoor.png", stock1: stock1, stock2: stock2),
+          CompareTable(image: "assets/reclameaqui.png", stock1: stock1, stock2: stock2),
+          StockGraph(),
+          StockGraph(),
         ],
       ),
     );
@@ -129,11 +133,14 @@ class StockData extends StatelessWidget {
 
   Widget similarValue(BuildContext context) {
     return Container(
-        height: MediaQuery.of(context).size.height * 0.6,
-        child: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Card(child: Text("Salve")),
-        ));
+      height: MediaQuery.of(context).size.height * 0.6,
+      child: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Card(
+          child: Text("Salve"),
+        ),
+      ),
+    );
   }
 
   @override
@@ -154,16 +161,18 @@ class CompareScreen extends StatelessWidget {
 
   Widget centerScreen(BuildContext context, Stock companyStock) {
     return Container(
-      height: MediaQuery.of(context).size.height * 0.8,
+      height: 2000,
       color: Colors.green,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(30, 20, 20, 30),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            StockHeader(stock1: stock1, stock2: stock2,),
-            StockData(companyStock: companyStock),
-          ],
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(30, 20, 20, 30),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              StockHeader(stock1: stock1, stock2: stock2),
+              StockData(stock1: stock1, stock2: stock2),
+            ],
+          ),
         ),
       ),
     );

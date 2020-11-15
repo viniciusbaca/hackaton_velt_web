@@ -49,7 +49,8 @@ class ValueRow extends StatelessWidget {
 }
 
 class CompanyCard extends StatelessWidget {
-  const CompanyCard({Key key, this.stock, this.value1, this.value2, this.value3}) : super(key: key);
+  const CompanyCard({Key key, this.stock, this.value1, this.value2, this.value3})
+      : super(key: key);
 
   final Stock stock;
   final String value1, value2, value3;
@@ -80,7 +81,9 @@ class CompanyCard extends StatelessWidget {
                     child: Text(stock.stock),
                   ),
                 ),
-                Expanded(flex: 6, child: ValueRow(value1: value1, value2: value2, value3: value3))
+                Expanded(
+                    flex: 6,
+                    child: ValueRow(value1: value1, value2: value2, value3: value3))
               ],
             ),
           ),
@@ -90,33 +93,26 @@ class CompanyCard extends StatelessWidget {
   }
 }
 
-class EveryStock extends StatefulWidget {
+class AllStocksList extends StatefulWidget {
+  final Future futureAllStocks;
+
+  const AllStocksList({Key key, this.futureAllStocks}) : super(key: key);
   @override
-  _EveryStockState createState() => _EveryStockState();
+  _AllStocksListState createState() => _AllStocksListState(futureAllStocks);
 }
 
-class _EveryStockState extends State<EveryStock> {
-  Future<List<Stock>> futureAllStocks;
+class _AllStocksListState extends State<AllStocksList> {
+  _AllStocksListState(this.futureAllStocks);
+  final Future futureAllStocks;
 
   @override
-  void initState() {
-    futureAllStocks = getStaticAll();
-    super.initState();
-  }
-
-  Widget topBar() {
-    return Container(
-      color: Colors.black,
-    );
-  }
-
-  Widget cardList(BuildContext context, String text) {
+  Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(30, 20, 30, 20),
+      padding: const EdgeInsets.fromLTRB(30, 30, 30, 30),
       child: Column(
         children: [
           Container(
-            child: Align(alignment: Alignment.centerLeft, child: Text(text)),
+            child: Align(alignment: Alignment.centerLeft, child: Text("Todas ações")),
           ),
           FutureBuilder(
               future: futureAllStocks,
@@ -146,29 +142,26 @@ class _EveryStockState extends State<EveryStock> {
                   return Center(child: CircularProgressIndicator());
                 }
               }),
-          FlatButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => CompanyScreen()),
-              );
-            },
-            child: Text("Ver mais"),
-          )
+          Text("Ver mais")
         ],
       ),
     );
   }
+}
 
-  Widget centerScreen(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.all(10),
-      child: cardList(context, "chama"),
-    );
-  }
 
-  Widget bottomBar() {
-    return Container(color: Colors.black);
+class EveryStock extends StatefulWidget {
+  @override
+  _EveryStockState createState() => _EveryStockState();
+}
+
+class _EveryStockState extends State<EveryStock> {
+  Future<List<Stock>> futureAllStocks;
+
+  @override
+  void initState() {
+    futureAllStocks = getStaticAll();
+    super.initState();
   }
 
   @override
@@ -176,9 +169,9 @@ class _EveryStockState extends State<EveryStock> {
     return Scaffold(
       body: Column(
         children: [
-          Expanded(flex: 1, child: topBar()),
-          Expanded(flex: 10, child: centerScreen(context)),
-          Expanded(flex: 1, child: bottomBar()),
+          Expanded(flex: 1, child: Container(color: Color(0XFF1A237E))),
+          Expanded(flex: 10, child: AllStocksList(futureAllStocks: futureAllStocks,)),
+          Expanded(flex: 1, child: Container(color: Color(0XFF1A237E))),
         ],
       ),
     );
