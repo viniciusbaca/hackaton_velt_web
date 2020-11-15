@@ -26,15 +26,15 @@ class GetAll {
 class Stock {
   String stock;
   String image;
-  Esg esg;
+//  Esg esg; //TODO uncomment esg
   GlassDoor glassDoor;
   RA rA;
 
-  Stock({this.stock, this.esg, this.glassDoor, this.rA});
+  Stock({this.stock, /*this.esg,*/ this.glassDoor, this.rA});
 
   Stock.fromJson(Map<String, dynamic> json) {
     stock = json['Stock'];
-    esg = json['Esg'] != null ? new Esg.fromJson(json['Esg']) : null;
+    //   esg = json['Esg'] != null ? new Esg.fromJson(json['Esg']) : null;
     glassDoor = json['GlassDoor'] != null ? new GlassDoor.fromJson(json['GlassDoor']) : null;
     rA = json['RA'] != null ? new RA.fromJson(json['RA']) : null;
   }
@@ -42,9 +42,9 @@ class Stock {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['Stock'] = this.stock;
-    if (this.esg != null) {
+    /*if (this.esg != null) {
       data['Esg'] = this.esg.toJson();
-    }
+    }*/
     if (this.glassDoor != null) {
       data['GlassDoor'] = this.glassDoor.toJson();
     }
@@ -145,18 +145,18 @@ class RA {
   }
 }
 
-Future<List<Stock>> getStaticSelected() async {
-  String staticJson = await Future.delayed(Duration(milliseconds: 1500), () {
+Future<Map<String, List<Stock>>> getMapStocks() async {
+  String staticJson = await Future.delayed(Duration(milliseconds: 0), () { //TODO change duration
     return staticAll;
   });
 
   Map _responseMap = jsonDecode(staticJson);
   GetAll all = GetAll.fromJson(_responseMap);
-  List<Stock> stockList = all.stockList;
+  List<Stock> allStocks = all.stockList;
 
   List<Stock> selectedStocks = [];
 
-  for (Stock stock in stockList) {
+  for (Stock stock in allStocks) {
     if (stock.stock == "EGIE3") {
       stock.image = "assets/engie.png";
       selectedStocks.add(stock);
@@ -182,7 +182,10 @@ Future<List<Stock>> getStaticSelected() async {
       selectedStocks.add(stock);
     }
   }
-  return selectedStocks;
+
+  Map<String, List<Stock>> stocksMap = {"allStocks": allStocks, "selectedStocks": selectedStocks};
+
+  return stocksMap;
 }
 
 Future<List<Stock>> getStaticAll() async {
@@ -193,12 +196,6 @@ Future<List<Stock>> getStaticAll() async {
   Map _responseMap = jsonDecode(staticJson);
   GetAll all = GetAll.fromJson(_responseMap);
   List<Stock> stockList = all.stockList;
-
-  /*for (int index = 0; index <= stockList.length; index++) {
-    if (stockList[index].esg == null || stockList[index].esg.rating ==null) {
-      stockList.removeAt(index);
-    }
-  }*/
 
   return stockList;
 }

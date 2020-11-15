@@ -134,7 +134,7 @@ class _EveryStockState extends State<EveryStock> {
                         itemBuilder: (context, index) {
                           return CompanyCard(
                             stock: allStocks[index],
-                            value1: "${allStocks[index].rA.rating}",
+                            value1: allStocks[index].glassDoor.overall,
                             value2: allStocks[index].glassDoor.overall,
                             value3: allStocks[index].glassDoor.diversidadeEInclusao,
                           );
