@@ -1,6 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hackaton_velt_app/Models/GetAll.dart';
 import 'package:hackaton_velt_app/Screens/companyScreen.dart';
+import 'package:hackaton_velt_app/Screens/compareStocks.dart';
 import 'package:hackaton_velt_app/Screens/everyStock.dart';
 
 class IndicatorRow extends StatelessWidget {
@@ -96,48 +98,147 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  Future<List<Stock>> futureSelectedStocks;
+  Future<Map<String, List<Stock>>> futureMapStocks;
+  final stockField1 = TextEditingController();
+  final stockField2 = TextEditingController();
+  bool inputError1 = false;
+  bool inputError2 = false;
 
   @override
   void initState() {
-    futureSelectedStocks = getStaticSelected();
+    futureMapStocks = getMapStocks();
     super.initState();
   }
 
-  Widget topBar() {
-    return Container(
-      color: Colors.black,
+  Widget stockField(String text, TextEditingController controller, bool errorBool) {
+    return Column(
+      children: [
+        Text("Empresa $text"),
+        TextField(
+            onTap: () {
+              setState(() {
+                inputError1 = false;
+                inputError2 = false;
+              });
+            },
+            controller: controller,
+            decoration: errorBool == true
+                ? InputDecoration(
+                    errorStyle: TextStyle(color: Colors.red), errorText: 'Por favor digite um código válido')
+                : InputDecoration())
+      ],
     );
   }
 
-  Widget cardList(BuildContext context, String text) {
+  Widget compareStocks(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(30, 20, 30, 20),
       child: Column(
         children: [
           Container(
-            child: Align(alignment: Alignment.centerLeft,child: Text(text)),
+            child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text("Comparador", style: TextStyle(fontWeight: FontWeight.w900))),
           ),
           FutureBuilder(
-              future: futureSelectedStocks,
+              future: futureMapStocks,
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 if (snapshot.hasData) {
-                  List<Stock> selectedStocks = snapshot.data;
+                  Map<String, List<Stock>> mapStocks = snapshot.data;
+                  List<Stock> allStocks = mapStocks["allStocks"];
+
+                  return Column(
+                    children: [
+                      Container(
+                          height: MediaQuery.of(context).size.height * 0.2,
+                          child: Column(
+                            children: [
+                              stockField("1", stockField1, inputError1),
+                              stockField("2", stockField2, inputError2)
+                            ],
+                          )),
+                      FlatButton(
+                        onPressed: () {
+                          Stock selectedStock1;
+                          Stock selectedStock2;
+
+                          for (Stock stock in allStocks) {
+                            if (stock.stock == stockField1.text) {
+                              inputError1 = false;
+                              selectedStock1 = stock;
+                              break;
+                            } else {
+                              inputError1 = true;
+                            }
+                          }
+                          for (Stock stock in allStocks) {
+                            if (stock.stock == stockField2.text) {
+                              inputError2 = false;
+                              selectedStock2 = stock;
+                              break;
+                            } else {
+                              inputError2 = true;
+                            }
+                          }
+                          if (inputError1 == false && inputError1 == false) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      CompareStocks(stock1: selectedStock1, stock2: selectedStock2)),
+                            );
+                            print("tey");
+                          } else {
+                            setState(() {
+                              inputError1 = true;
+                              inputError2 = true;
+                            });
+                          }
+                        },
+                        child: Container(color: Colors.cyan, child: Text("Comparar")),
+                      )
+                    ],
+                  );
+                } else {
+                  return Center(child: CircularProgressIndicator());
+                }
+              }),
+        ],
+      ),
+    );
+  }
+
+  Widget cardList(BuildContext context, String text, int length, int sum) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(30, 20, 30, 20),
+      child: Column(
+        children: [
+          Container(
+            child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(text, style: TextStyle(fontWeight: FontWeight.w900))),
+          ),
+          FutureBuilder(
+              future: futureMapStocks,
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                if (snapshot.hasData) {
+                  Map<String, List<Stock>> mapStocks = snapshot.data;
+                  List<Stock> selectedStocks = mapStocks["selectedStocks"];
                   return Container(
-                    height: MediaQuery.of(context).size.height*0.3,
+                    height: MediaQuery.of(context).size.height * 0.3,
                     child: SingleChildScrollView(
                       child: ListView.builder(
                         scrollDirection: Axis.vertical,
                         physics: NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
-                        itemCount: selectedStocks.length,
+                        itemCount: length,
                         itemBuilder: (context, index) {
                           return CompanyCard(
-                            stock: selectedStocks[index],
-                            image: selectedStocks[index].image,
-                            value1: "${selectedStocks[index].esg.rating}",
-                            value2: selectedStocks[index].glassDoor.overall,
-                            value3: selectedStocks[index].glassDoor.culturaEValores,
+                            stock: selectedStocks[index + sum],
+                            image: selectedStocks[index + sum].image,
+                            value1: "${selectedStocks[index + sum].glassDoor.overall}", //TODO ESG
+                            value2: selectedStocks[index + sum].glassDoor.overall,
+                            value3: selectedStocks[index + sum].glassDoor.culturaEValores,
                           );
                         },
                       ),
@@ -151,12 +252,10 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                    builder: (context) => EveryStock(
-                    )),
+                MaterialPageRoute(builder: (context) => EveryStock()),
               );
             },
-            child: Text("Ver mais"),
+            child: Container(color: Colors.cyan, child: Text("Ver mais")),
           )
         ],
       ),
@@ -171,16 +270,16 @@ class _HomeScreenState extends State<HomeScreen> {
             Expanded(
               child: Column(
                 children: [
-                  cardList(context, "Confira os destaques de hoje"),
-                  cardList(context, "Confira os destaques de hoje"),
+                  cardList(context, "Confira os destaques de hoje", 2, 0),
+                  cardList(context, "Confira os destaques de hoje", 2, 0),
                 ],
               ),
             ),
             Expanded(
               child: Column(
                 children: [
-                  cardList(context, "Como andam seus favoritos"),
-                  cardList(context, "Como andam seus favoritos"),
+                  cardList(context, "Como andam seus favoritos", 3, 2),
+                  compareStocks(context),
                 ],
               ),
             ),
@@ -188,8 +287,11 @@ class _HomeScreenState extends State<HomeScreen> {
         ));
   }
 
-  Widget bottomBar() {
-    return Container(color: Colors.black);
+  @override
+  void dispose() {
+    stockField1.dispose();
+    stockField2.dispose();
+    super.dispose();
   }
 
   @override
@@ -197,9 +299,9 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       body: Column(
         children: [
-          Expanded(flex: 1, child: topBar()),
+          Expanded(flex: 1, child: Container(color: Colors.black)),
           Expanded(flex: 10, child: centerScreen(context)),
-          Expanded(flex: 1, child: bottomBar()),
+          Expanded(flex: 1, child: Container(color: Colors.black)),
         ],
       ),
     );
