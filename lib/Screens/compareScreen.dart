@@ -97,13 +97,26 @@ class CompareTable extends StatelessWidget {
 }
 
 class StockGraph extends StatelessWidget {
+  final int number;
+
+  const StockGraph({Key key, this.number}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: Container(
         padding: EdgeInsets.all(10),
         width: double.maxFinite,
-        child: Card(child: Text("oi")),
+        child: Card(child: Column(
+          children: [
+            Text("Twitter"),
+            number ==null?
+            Image(
+              image: AssetImage("assets/chart.jpeg")): Image(
+                image: AssetImage("assets/chart$number.jpeg")
+
+            )
+          ],
+        )),
       ),
     );
   }
@@ -125,19 +138,68 @@ class StockData extends StatelessWidget {
           CompareTable(image: "assets/glassdoor.png", stock1: stock1, stock2: stock2),
           CompareTable(image: "assets/reclameaqui.png", stock1: stock1, stock2: stock2),
           StockGraph(),
-          StockGraph(),
+          StockGraph(number: 2),
         ],
       ),
     );
   }
 
   Widget similarValue(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.6,
-      child: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Card(
-          child: Text("Salve"),
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: Card(
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Container(
+                color: Colors.white60,
+                width: double.maxFinite,
+                child: Text("Empresas similares a essa", textAlign: TextAlign.center)),
+            Container(
+                color: Colors.black.withOpacity(0.6),
+                width: double.maxFinite,
+                child: Padding(
+                  padding: const EdgeInsets.all(5.0),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: Image(image: AssetImage("reclameaqui.png"), height: 30),
+                      ),
+                      Container(
+                        color: Colors.white,
+                        height: 50,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Image(image: AssetImage("magalu.png"), width: 50),
+                            Image(image: AssetImage("cpfl.png"), width: 50)
+                          ],
+                        ),
+                      ),
+                      Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: Image(image: AssetImage("glassdoor.png"), height: 30),
+                          ),
+                          Container(
+                            color: Colors.white,
+                            height: 50,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Image(image: AssetImage("magalu.png"), width: 50),
+                                Image(image: AssetImage("cpfl.png"), width: 50)
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                )),
+          ],
         ),
       ),
     );
@@ -162,7 +224,7 @@ class CompareScreen extends StatelessWidget {
   Widget centerScreen(BuildContext context, Stock companyStock) {
     return Container(
       height: 2000,
-      color: Colors.green,
+      color: Colors.white60,
       child: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(30, 20, 20, 30),

@@ -26,25 +26,26 @@ class GetAll {
 class Stock {
   String stock;
   String image;
-//  Esg esg; //TODO uncomment esg
+  Esg esg;
   GlassDoor glassDoor;
   RA rA;
 
-  Stock({this.stock, /*this.esg,*/ this.glassDoor, this.rA});
+  Stock({this.stock, this.esg, this.glassDoor, this.rA});
 
   Stock.fromJson(Map<String, dynamic> json) {
     stock = json['Stock'];
-    //   esg = json['Esg'] != null ? new Esg.fromJson(json['Esg']) : null;
-    glassDoor = json['GlassDoor'] != null ? new GlassDoor.fromJson(json['GlassDoor']) : null;
+    esg = json['Esg'] != null ? new Esg.fromJson(json['Esg']) : null;
+    glassDoor =
+        json['GlassDoor'] != null ? new GlassDoor.fromJson(json['GlassDoor']) : null;
     rA = json['RA'] != null ? new RA.fromJson(json['RA']) : null;
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['Stock'] = this.stock;
-    /*if (this.esg != null) {
+    if (this.esg != null) {
       data['Esg'] = this.esg.toJson();
-    }*/
+    }
     if (this.glassDoor != null) {
       data['GlassDoor'] = this.glassDoor.toJson();
     }
@@ -146,7 +147,7 @@ class RA {
 }
 
 Future<Map<String, List<Stock>>> getMapStocks() async {
-  String staticJson = await Future.delayed(Duration(milliseconds: 0), () { //TODO change duration
+  String staticJson = await Future.delayed(Duration(milliseconds: 1000), () {
     return staticAll;
   });
 
@@ -183,7 +184,10 @@ Future<Map<String, List<Stock>>> getMapStocks() async {
     }
   }
 
-  Map<String, List<Stock>> stocksMap = {"allStocks": allStocks, "selectedStocks": selectedStocks};
+  Map<String, List<Stock>> stocksMap = {
+    "allStocks": allStocks,
+    "selectedStocks": selectedStocks
+  };
 
   return stocksMap;
 }

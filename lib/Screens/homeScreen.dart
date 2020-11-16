@@ -21,7 +21,7 @@ class _FastSearchState extends State<FastSearch> {
   final Future futureMapStocks;
   _FastSearchState(this.futureMapStocks);
 
-  final searchController = TextEditingController(text: 'ABEV3');
+  final searchController = TextEditingController();
   bool inputError = false;
   Stock selectedStock;
 
@@ -187,8 +187,8 @@ class _CompareStocksState extends State<CompareStocks> {
   final Future futureMapStocks;
   _CompareStocksState(this.futureMapStocks);
 
-  final stockField1 = TextEditingController(text: 'ABEV3');
-  final stockField2 = TextEditingController(text: 'AZUL4');
+  final stockField1 = TextEditingController();
+  final stockField2 = TextEditingController();
   bool inputError1 = false;
   bool inputError2 = false;
 

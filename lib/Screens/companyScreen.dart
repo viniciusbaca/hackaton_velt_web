@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:hackaton_velt_app/Models/GetAll.dart';
-import 'homeScreen.dart';
 
 class StockDescription extends StatelessWidget {
   const StockDescription({Key key, this.companyStock}) : super(key: key);
@@ -8,15 +7,19 @@ class StockDescription extends StatelessWidget {
 
   Widget logo() {
     return Padding(
-      padding: const EdgeInsets.all(15.0),
-      child: Image(image: AssetImage(companyStock.image), height: 60),
-    );
+        padding: const EdgeInsets.all(15.0),
+        child: companyStock.image != null
+            ? Image(image: AssetImage(companyStock.image), height: 60)
+            : Text(companyStock.stock));
   }
 
   Widget stockCode() {
-    return Column(
-      children: [Text(companyStock.stock), /*Text("ESG: ${companyStock.esg.rating}")*/],
-    );
+    return Row(children: [
+      Text(companyStock.stock),
+      companyStock.esg != null
+          ? Text("ESG: ${companyStock.esg.rating}")
+          : Text("ESG: Null")
+    ]);
   }
 
   Widget compareStock() {
@@ -80,17 +83,23 @@ class TableInfo extends StatelessWidget {
                       children: [
                         infoValue("Overall", glassDoorInfo.overall),
                         infoValue("Cultura e valores", glassDoorInfo.culturaEValores),
-                        infoValue("Diversidade inclusão", glassDoorInfo.diversidadeEInclusao),
+                        infoValue(
+                            "Diversidade inclusão", glassDoorInfo.diversidadeEInclusao),
                         infoValue("Qualidade de vida", glassDoorInfo.qualidadeDeVida),
                         infoValue("Alta liderança", glassDoorInfo.altaLideranca),
-                        infoValue("Remuneração e benefícios", glassDoorInfo.remuneracaoEBeneficios),
+                        infoValue("Remuneração e benefícios",
+                            glassDoorInfo.remuneracaoEBeneficios),
                       ],
                     )
                   : Column(
                       children: [
-                        infoValue("Rating", reclameAquiInfo.rating),
-                        infoValue("Reclamações respondidas", reclameAquiInfo.reclamacoesRespondidas),
-                        infoValue("Voltariam a fazer negócio", reclameAquiInfo.voltariamAFazerNegocio),
+                        reclameAquiInfo.rating != null
+                            ? infoValue("Rating", reclameAquiInfo.rating)
+                            : infoValue("Rating", "Null"),
+                        infoValue("Reclamações respondidas",
+                            reclameAquiInfo.reclamacoesRespondidas),
+                        infoValue("Voltariam a fazer negócio",
+                            reclameAquiInfo.voltariamAFazerNegocio),
                         infoValue("Índice de solução", reclameAquiInfo.indiceDeSolucao),
                         infoValue("Nota do consumidor", reclameAquiInfo.notaDoConsumidor),
                         infoValue("Nota do consumidor", reclameAquiInfo.notaDoConsumidor)
@@ -130,7 +139,7 @@ class StockData extends StatelessWidget {
                 ),
               ],
             ),
-          ),
+          ),/*
           Expanded(
             child: Column(
               children: [
@@ -143,10 +152,9 @@ class StockData extends StatelessWidget {
                         children: [
                           Container(
                             height: 30,
+                            child: Text("Chama"),
                           ),
-                          Center(
-                           child: Image(image: AssetImage(""))
-                          )
+                          Center(child: Image(image: AssetImage("assets/chart.jpeg")))
                         ],
                       ),
                     ),
@@ -157,25 +165,85 @@ class StockData extends StatelessWidget {
                     padding: EdgeInsets.all(10),
                     width: double.maxFinite,
                     child: Card(
-                      child: Text("oi"),
+                      child: Column(
+                        children: [
+                          Container(
+                            height: 30,
+                            child: Text("chama"),
+                          ),
+                          Center(child: Image(image: AssetImage("assets/chart2.jpeg")))
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ],
             ),
-          )
+          )*/
         ],
       ),
     );
   }
 
   Widget similarValue(BuildContext context) {
-    return Container(
-        height: MediaQuery.of(context).size.height * 0.6,
-        child: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Card(child: Text("Salve")),
-        ));
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: Card(
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Container(
+                color: Colors.white60,
+                width: double.maxFinite,
+                child: Text("Empresas similares a essa", textAlign: TextAlign.center)),
+            Container(
+                color: Colors.black.withOpacity(0.6),
+                width: double.maxFinite,
+                child: Padding(
+                  padding: const EdgeInsets.all(5.0),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: Image(image: AssetImage("reclameaqui.png"), height: 30),
+                      ),
+                      Container(
+                        color: Colors.white,
+                        height: 50,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Image(image: AssetImage("magalu.png"), width: 50),
+                            Image(image: AssetImage("cpfl.png"), width: 50)
+                          ],
+                        ),
+                      ),
+                      Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: Image(image: AssetImage("glassdoor.png"), height: 30),
+                          ),
+                          Container(
+                            color: Colors.white,
+                            height: 50,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Image(image: AssetImage("magalu.png"), width: 50),
+                                Image(image: AssetImage("cpfl.png"), width: 50)
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                )),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -201,7 +269,7 @@ class CompanyScreen extends StatelessWidget {
   Widget centerScreen(BuildContext context, Stock companyStock) {
     return Container(
       height: MediaQuery.of(context).size.height * 0.8,
-      color: Colors.white60 ,
+      color: Colors.white60,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(30, 20, 20, 30),
         child: Column(
